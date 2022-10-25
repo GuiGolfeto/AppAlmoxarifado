@@ -7,7 +7,7 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
     # saindo do automatizador e indo para o programa
     sleep(2)
     ag.keyDown('alt')
-    ag.press('tab')
+    ag.press('tab', presses=2)
     ag.keyUp('alt')
 
     # clicando no inserir e iniciando novo lançamento
