@@ -4,6 +4,9 @@ from time import sleep
 
 
 def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viagemSim, qtd, data, preco, obs, km):
+    if (viagemSim == True):
+        precoViagem = sg.popup_get_text('Preço da viagem: ')
+    
     # saindo do automatizador e indo para o programa
     sleep(2)
     ag.keyDown('alt')
@@ -29,12 +32,12 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
             nf = f'sf{nf}'
         else:
             nf = f'S{nf}'
-    elif(educacao == True):
+    elif (educacao == True):
         if (viagemSim == True):
             nf = f'ef{nf}'
         else:
             nf = f'E{nf}'
-    elif(outros == True):
+    elif (outros == True):
         if (viagemSim == True):
             nf = f'of{nf}'
         else:
@@ -52,7 +55,9 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
     sleep(2)
 
     # mensagem para confirmar motorista e veiculo para proseguir
-    msg = sg.popup_yes_no('Confirme o veiculo e selecione o motorista e clique em Yes')  # Shows Yes and No buttons
+    # Shows Yes and No buttons
+    msg = sg.popup_yes_no(
+        'Confirme o veiculo e selecione o motorista e clique em Yes')
     # se for Yes o programa continua
     if (msg == 'Yes'):
         sleep(1)
@@ -71,7 +76,11 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
         sleep(2)
         ag.write(qtd)
         ag.press('tab')
-        ag.write(preco)
+        
+        if (viagemSim == True):
+            ag.write(precoViagem)
+        else:
+            ag.write(preco)
 
         # se for motossera
         if (frota == 'motosse'):
@@ -82,7 +91,7 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
             #sg.click(x=1057, y=948)
             print('moto')
             return
-        
+
         # se tiver com KM quebrado
         if (km == 'Q' or km == 'q'):
             ag.press('tab', presses=8)
@@ -98,7 +107,7 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
             ag.write('ND KM')
             #sg.click(x=1057, y=948)
             print('nd km')
-        
+
         # se for de viagem
         if (viagemSim == True):
             ag.press('tab', presses=6)
@@ -109,7 +118,6 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
             #sg.click(x=1057, y=948)
             print('viagem')
 
-        
         if (viagemSim == False):
             ag.press('tab', presses=6)
             ag.write(km)
@@ -117,37 +125,49 @@ def automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viage
             #sg.click(x=1057, y=948)
             print('sem viagem')
 
-
-    else: # se não ele para o programa
+    else:  # se não ele para o programa
         sg.WIN_CLOSED
-
 
 
 class screenCadastroNF:
     def __init__(self):
         sg.theme('DarkBlue12')
         layout = [
-            [sg.Column([[sg.Text('',size=(3,0))]]), sg.Image(filename='logo.png')],
+            [sg.Column([[sg.Text('', size=(3, 0))]]),
+             sg.Image(filename='logo.png')],
             [sg.Text('Data', size=(10, 0)), sg.Input(size=(15, 0), key='data'),
-            sg.Text('Observação', size=(10, 0)), sg.Input(size=(15, 0), key='obs'),
-            sg.Text('Odometro', size=(10, 0)), sg.Input(size=(15, 0), key='km')],
+             sg.Text('Observação', size=(10, 0)), sg.Input(
+                 size=(15, 0), key='obs'),
+             sg.Text('Odometro', size=(10, 0)), sg.Input(size=(15, 0), key='km')],
             [sg.Text('Nota Fiscal', size=(10, 0)), sg.Input(size=(15, 0), key='nf'),
-             sg.Text('Frota', size=(10, 0)), sg.Input(size=(15, 0), key='frota'),
+             sg.Text('Frota', size=(10, 0)), sg.Input(
+                 size=(15, 0), key='frota'),
              sg.Text('Quantidade', size=(10, 0)), sg.Input(size=(15, 0), key='qtd')],
             [sg.Text('Fornecedor', size=(10, 0)), sg.Input(size=(15, 0), key='fornecedor'),
-             sg.Text('Responsavel', size=(10, 0)), sg.Input(size=(15, 0), key='responsavel'),
-             sg.Text('Preço', size=(10, 0)), sg.Input(size=(15, 0), key='preco')],
+             sg.Text('Responsavel', size=(10, 0)), sg.Input(
+                 size=(15, 0), key='responsavel')],
+            
+            [sg.Text('Preço')],
+            [sg.Radio('Gasolina', 'pr', key='gas'), sg.Radio(
+                'Etanol', 'pr',  key='eta'), sg.Radio('Diesil Comum', 'pr', key='dc'),
+             sg.Radio('Diesil S-10', 'pr', key='ds')],
+            
+            [sg.Text('Viagem?')],
             [sg.Text('Qual Departamento?')],
             [sg.Radio('Saude', 'dep', key='saude'), sg.Radio(
                 'Educação', 'dep',  key='educação'), sg.Radio('Outros', 'dep', key='outros')],
+            
             [sg.Text('Viagem?')],
             [sg.Radio('Sim', 'Viagem', key='viagem'), sg.Radio(
-                'Nao', 'Viagem', key='naoViagem')],
+                'Nao', 'Viagem', key='naoViagem')],    
+                      
             [sg.Button('Enviar dados')],
             [sg.Button('Sair')],
 
         ]
         self.janela = sg.Window('Lançamento de NFs').layout(layout)
+
+        
 
     def iniciarAuto(self):
         while True:
@@ -159,7 +179,6 @@ class screenCadastroNF:
 
             if self.button == "Enviar dados":
                 data = self.values['data']
-                preco = self.values['preco']
                 km = self.values['km']
                 obs = self.values['obs']
                 nf = self.values['nf']
@@ -171,6 +190,21 @@ class screenCadastroNF:
                 educacao = self.values['educação']
                 outros = self.values['outros']
                 viagemSim = self.values['viagem']
+                
+                gas = self.values['gas']
+                eta = self.values['eta']
+                dc = self.values['dc']
+                ds = self.values['ds']
+                
+                if (gas == True):
+                    preco = '5,05'
+                elif (eta == True):
+                    preco = '3,62'
+                elif (dc == True):
+                    preco = '6,87'
+                elif (ds == True):
+                    preco = '6,97'               
+
                 automatic(nf, frota, fornecedor, responsavel, saude, educacao, outros, viagemSim, qtd, data, preco, obs, km)
 
 
